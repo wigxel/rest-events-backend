@@ -1,1 +1,4 @@
-# rest-events-graphql-api
+# rest-events-api
+
+## Technologies:
+- TypeGraphql
