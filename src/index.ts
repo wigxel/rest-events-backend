@@ -21,8 +21,7 @@ import { userController } from './modules/user/user.controller';
     validate: true,
     resolvers: [eventController, userController],
     authChecker: ({ context: { req } }) => {
-      if (!req.session.userId) return false;
-      return true;
+      return !!req.session.userId;
     }
   });
 
@@ -38,7 +37,7 @@ import { userController } from './modules/user/user.controller';
   app.use(
     cors({
       credentials: true,
-      origin: 'http://localhost:3000'
+      origin: process.env.CORS_ORIGIN_URL
     })
   );
 
