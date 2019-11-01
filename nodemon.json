@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ext": "ts",
+  "exec": "node --inspect=127.0.0.1:9223  -r ts-node/register -r dotenv/config -- src/index.ts ",
+  "env": {}
+}

@@ -1,31 +1,67 @@
 import 'reflect-metadata';
-import * as express from 'express';
-import { createConnections } from 'typeorm';
-import { ApolloServer } from 'apollo-server-express';
+import cors from 'cors';
+import express from 'express';
+import session from 'express-session';
+import connectRedis from 'connect-redis';
 import { buildSchema } from 'type-graphql';
+import { ApolloServer } from 'apollo-server-express';
 
-import { eventResolver } from './modules/event/Publish';
-import { registerResolver } from './modules/user/Register';
+import { redis } from './config/config.redis';
+import { mongooseConnection } from './config/config.mongo';
+import { typeormConnection } from './config/config.typeorm';
 
-const init = async () => {
-  const connection = await createConnections();
+import { eventController } from './modules/event/event.controller';
+import { userController } from './modules/user/user.controller';
+
+(async () => {
+  await mongooseConnection();
+  await typeormConnection();
 
   const schema = await buildSchema({
-    resolvers: [registerResolver, eventResolver]
+    validate: true,
+    resolvers: [eventController, userController],
+    authChecker: ({ context: { req } }) => {
+      if (!req.session.userId) return false;
+      return true;
+    }
   });
 
   const apolloServer = new ApolloServer({
     schema,
-    context: () => ({ connection })
+    context: ({ req }) => ({ req })
   });
 
   const app = express();
+
+  const RedisStore = connectRedis(session);
+
+  app.use(
+    cors({
+      credentials: true,
+      origin: 'http://localhost:3000'
+    })
+  );
+
+  app.use(
+    session({
+      store: new RedisStore({
+        client: redis as any
+      }),
+      resave: false,
+      saveUninitialized: false,
+      name: process.env.SESSION_ID as string,
+      secret: process.env.SESSION_SECRET as string,
+      cookie: {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7 * 365, // 7 years
+        secure: process.env.NODE_ENV === 'production'
+      }
+    })
+  );
 
   apolloServer.applyMiddleware({ app });
 
   app.listen(4000, () =>
     console.log('server started on http://localhost:4000/graphql')
   );
-};
-
-init();
+})();
