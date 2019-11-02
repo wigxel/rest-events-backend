@@ -1,4 +1,7 @@
-import { Resolver, Mutation, Query, Arg, Authorized } from 'type-graphql';
+import { Resolver, Mutation, Query, Arg, UseMiddleware } from 'type-graphql';
+
+import { IsAuthorized } from '../../lib/middlewares/middlewares.authentication';
+
 import { Event, eventModel } from './event.model.mongo';
 import { createEventInput } from './event.validation';
 
@@ -14,7 +17,7 @@ export class eventController {
     }
   }
 
-  @Authorized()
+  @UseMiddleware(IsAuthorized)
   @Mutation(() => Boolean)
   async createEvent(@Arg('input')
   {

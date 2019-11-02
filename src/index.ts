@@ -19,10 +19,7 @@ import { userController } from './modules/user/user.controller';
 
   const schema = await buildSchema({
     validate: true,
-    resolvers: [eventController, userController],
-    authChecker: ({ context: { req } }) => {
-      return !!req.session.userId;
-    }
+    resolvers: [eventController, userController]
   });
 
   const apolloServer = new ApolloServer({
