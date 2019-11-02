@@ -9,7 +9,7 @@ import {
 } from 'type-graphql';
 import * as bcrypt from 'bcryptjs';
 
-import { ApolloServerContext } from '../../lib/types/interfaces';
+import { ApolloServerContext } from '../../lib/types/types.interfaces';
 
 import { User } from './user.model.pg';
 import { eventModel, Event } from '../event/event.model.mongo';
