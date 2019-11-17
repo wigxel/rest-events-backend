@@ -10,7 +10,7 @@ import { redis } from './config/config.redis';
 import { mongooseConnection } from './config/config.mongo';
 import { typeormConnection } from './config/config.typeorm';
 
-import { eventController } from './modules/event/event.controller';
+// import { eventController } from './modules/event/event.controller';
 import { userController } from './modules/user/user.controller';
 
 (async () => {
@@ -19,7 +19,7 @@ import { userController } from './modules/user/user.controller';
 
   const schema = await buildSchema({
     validate: true,
-    resolvers: [eventController, userController],
+    resolvers: [userController],
     authChecker: ({ context: { req } }) => {
       return !!req.session.userId;
     }

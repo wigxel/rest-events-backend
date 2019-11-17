@@ -1,23 +1,11 @@
 import 'reflect-metadata';
 import { createConnection } from 'typeorm';
+import config from '../../ormconfig';
 
-import { isProduction } from './config.helper';
- 
 export const typeormConnection = async () => {
   let typeormConnection = null;
   try {
-    // TODO: fix .env postgres url
-    // TODO: use postgres url
-    typeormConnection = await createConnection({
-      name: 'default',
-      type: 'postgres',
-      password: '',
-      username: 'postgres',
-      database: 'rest_events_dv1',
-      synchronize: true,
-      logging: !isProduction(),
-      entities: ['./src/modules/**/*.model.pg*']
-    });
+    typeormConnection = await createConnection(config);
 
     console.log('>>> successfully connected to postgres \n');
   } catch (err) {
