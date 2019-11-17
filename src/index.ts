@@ -1,17 +1,17 @@
-import 'reflect-metadata';
-import cors from 'cors';
-import express from 'express';
-import session from 'express-session';
-import connectRedis from 'connect-redis';
-import { buildSchema } from 'type-graphql';
-import { ApolloServer } from 'apollo-server-express';
+import "reflect-metadata";
+import cors from "cors";
+import express from "express";
+import session from "express-session";
+import connectRedis from "connect-redis";
+import { buildSchema } from "type-graphql";
+import { ApolloServer } from "apollo-server-express";
 
-import { redis } from './config/config.redis';
-import { mongooseConnection } from './config/config.mongo';
-import { typeormConnection } from './config/config.typeorm';
+import { redis } from "./config/config.redis";
+import { mongooseConnection } from "./config/config.mongo";
+import { typeormConnection } from "./config/config.typeorm";
 
 import { eventController } from './modules/event/event.controller';
-import { userController } from './modules/user/user.controller';
+import { userController } from "./modules/user/user.controller";
 
 (async () => {
   await mongooseConnection();
@@ -19,7 +19,10 @@ import { userController } from './modules/user/user.controller';
 
   const schema = await buildSchema({
     validate: true,
-    resolvers: [eventController, userController]
+    resolvers: [eventController, userController],
+    authChecker: ({ context: { req } }) => {
+      return !!req.session.userId;
+    }
   });
 
   const apolloServer = new ApolloServer({
@@ -50,14 +53,15 @@ import { userController } from './modules/user/user.controller';
       cookie: {
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7 * 365, // 7 years
-        secure: process.env.NODE_ENV === 'production'
+        secure: process.env.NODE_ENV === "production"
       }
     })
   );
 
   apolloServer.applyMiddleware({ app });
 
-  app.listen(4000, () =>
-    console.log('server started on http://localhost:4000/graphql')
-  );
+  app.listen(4000, () => {
+    console.log(">> Server started on http://localhost:4000 \n");
+    console.log(">> GraphQl Server started on http://localhost:4000/graphql");
+  });
 })();
