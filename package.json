@@ -46,8 +46,8 @@
   },
   "scripts": {
     "start": "ts-node -r dotenv/config src/index.ts",
-    "start:dev": "nodemon --config nodemon.json",
-    "start:dev:db": "bash ./src/scripts/start-db.sh",
+    "dev": "nodemon --config nodemon.json",
+    "db:create": "bash ./src/scripts/start-db.sh",
     "commit": "git-cz",
     "db:clean": "POSTGRES_DATABASE_NAME=${POSTGRES_DATABASE_NAME:='rest_events_dv1'} bash ./src/scripts/clean-db.sh"
   },
